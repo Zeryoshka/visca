@@ -37,6 +37,15 @@ func CamGainCommand(c GainMode, s Selector) Command {
 	return Command{0x01, 0x04, byte(c), byte(s)}
 }
 
-func CamDirectGainCommand(c GainMode, val int8) Command {
-	return Command{0x01, 0x04, 0x40 | byte(c), byte(val)}
+// CamDirectGainCommand set direct gain, val in 0..255
+func CamDirectGainCommand(c GainMode, val byte) Command {
+	return Command{0x01, 0x04, 0x40 | byte(c), val}
+}
+
+// CamDirectSpeedCommand set color speed, val in 1(slow)..5(fast)
+func CamDirectSpeedCommand(speed byte) Command {
+	if 0 < speed && speed < 5 {
+		return Command{0x01, 0x04, 0x56, speed}
+	}
+	return nil
 }
