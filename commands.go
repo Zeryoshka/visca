@@ -49,3 +49,36 @@ func CamDirectSpeedCommand(speed byte) Command {
 	}
 	return nil
 }
+
+// CamRGainResetCommand
+func CamRGainResetCommand() Command {
+	return CamGainCommand(RGainChannel, Reset)
+}
+
+func CamRGainUpCommand() Command {
+	return CamGainCommand(RGainChannel, Up)
+}
+
+func CamRGainDownCommand() Command {
+	return CamGainCommand(RGainChannel, Down)
+}
+
+func CamDirectRGainCommand(val byte) Command {
+	return CamDirectGainCommand(RGainChannel, val)
+}
+
+func CamBGainResetCommand() Command {
+	return CamGainCommand(BGainChannel, Reset)
+}
+
+func CamBGainUpCommand() Command {
+	return CamGainCommand(BGainChannel, Up)
+}
+
+func CamBGainDownCommand() Command {
+	return CamGainCommand(BGainChannel, Down)
+}
+
+func CamDirectBGainCommand(val byte) Command {
+	return CamDirectGainCommand(BGainChannel, val)
+}
