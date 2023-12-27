@@ -46,6 +46,9 @@ func (c *Controller) Close() error {
 			return err
 		}
 	}
+	for k := range c.cameras {
+		delete(c.cameras, k)
+	}
 	return nil
 }
 

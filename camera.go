@@ -39,6 +39,19 @@ func (c *Controller) AddCamera(address string, index int, timeout time.Duration)
 	return camera, nil
 }
 
+func (c *Controller) RemoveCamera(viscaAddr viscaOverIpAddr) error {
+	camera, exists := c.cameras[viscaAddr]
+	if !exists {
+		return CameraNotFoundErr
+	}
+	if err := camera.controller.conns[viscaAddr.addr].Close(); err != nil {
+		return err
+	}
+	delete(camera.controller.conns, viscaAddr.addr)
+	delete(c.cameras, viscaAddr)
+	return nil
+}
+
 func (c *Camera) SendCommand(ctx context.Context, cmd Command) error {
 	return c.controller.sendCommand(ctx, c.viscaAddr, cmd)
 }
