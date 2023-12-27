@@ -40,14 +40,10 @@ func (c *Controller) AddCamera(address string, index int, timeout time.Duration)
 }
 
 func (c *Controller) RemoveCamera(viscaAddr viscaOverIpAddr) error {
-	camera, exists := c.cameras[viscaAddr]
+	_, exists := c.cameras[viscaAddr]
 	if !exists {
 		return CameraNotFoundErr
 	}
-	if err := camera.controller.conns[viscaAddr.addr].Close(); err != nil {
-		return err
-	}
-	delete(camera.controller.conns, viscaAddr.addr)
 	delete(c.cameras, viscaAddr)
 	return nil
 }

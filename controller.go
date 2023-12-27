@@ -46,10 +46,13 @@ func (c *Controller) Close() error {
 			return err
 		}
 	}
+	return nil
+}
+
+func (c *Controller) RemoveAllCameras() {
 	for k := range c.cameras {
 		delete(c.cameras, k)
 	}
-	return nil
 }
 
 func (c *Controller) buildHeader(rtype requestType, payloadLen int) []byte {
