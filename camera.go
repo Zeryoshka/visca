@@ -40,6 +40,7 @@ func (c *Controller) AddCamera(address string, index int, timeout time.Duration)
 }
 
 func (c *Controller) RemoveCamera(viscaAddr viscaOverIpAddr) error {
+	// TODO rewrite
 	_, exists := c.cameras[viscaAddr]
 	if !exists {
 		return CameraNotFoundErr

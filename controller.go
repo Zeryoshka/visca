@@ -50,6 +50,7 @@ func (c *Controller) Close() error {
 }
 
 func (c *Controller) RemoveAllCameras() {
+	// TODO rewrite
 	for k := range c.cameras {
 		delete(c.cameras, k)
 	}
