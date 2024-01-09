@@ -38,9 +38,14 @@ func CamGainCommand(c GainMode, s Selector) Command {
 	return Command{0x01, 0x04, byte(c), byte(s)}
 }
 
-// CamDirectGainCommand set direct gain, val in 0..255
+// CamDirectGainCommand set direct gain, val in 0..255 if RGain/BGain, else val in 0..14
 func CamDirectGainCommand(c GainMode, val byte) Command {
-	return Command{0x01, 0x04, 0x40 | byte(c), val}
+	if c == GainChannel && val > 0x0E {
+		return nil
+	}
+	p := (0xF0 & val) >> 4
+	q := 0x0F & val
+	return Command{0x01, 0x04, 0x40 | byte(c), 0x00, 0x00, p, q}
 }
 
 // CamDirectSpeedCommand set color speed, val in 1(slow)..5(fast)
@@ -63,16 +68,28 @@ func CamIrisCommand(s Selector) Command {
 	return Command{0x01, 0x04, 0x0B, byte(s)}
 }
 
+// CamDirectIrisCommand set direct iris position, val in 0x00..0x11
 func CamDirectIrisCommand(val byte) Command {
-	return Command{0x01, 0x04, 0x4B, val}
+	if val > 0x11 {
+		return nil
+	}
+	p := (0xF0 & val) >> 4
+	q := 0x0F & val
+	return Command{0x01, 0x04, 0x4B, 0x00, 0x00, p, q}
 }
 
 func CamShutterCommand(s Selector) Command {
 	return Command{0x01, 0x04, 0x0A, byte(s)}
 }
 
+// CamDirectShutterCommand set direct shutter position, val in 0x00..0x15
 func CamDirectShutterCommand(val byte) Command {
-	return Command{0x01, 0x04, 0x4A, val}
+	if val > 0x15 {
+		return nil
+	}
+	p := (0xF0 & val) >> 4
+	q := 0x0F & val
+	return Command{0x01, 0x04, 0x4A, 0x00, 0x00, p, q}
 }
 
 type ExposureMode byte
@@ -141,15 +158,21 @@ func CamAFModeCommand(mode AFMode) Command {
 	return Command{0x01, 0x04, 0x57, byte(mode)}
 }
 
-func CamAFModeIntervalCommand(val byte) Command {
-	return Command{0x01, 0x04, 0x27, val}
+func CamAFModeIntervalCommand(operationTime, stayingTime byte) Command {
+	p := (0xF0 & operationTime) >> 4
+	q := 0x0F & operationTime
+	r := (0xF0 & stayingTime) >> 4
+	s := 0x0F & stayingTime
+	return Command{0x01, 0x04, 0x27, p, q, r, s}
 }
 
-func CamAFModeDirectCommand(focusPosition []byte) Command {
-	if len(focusPosition) > 4 {
-		return nil
-	}
-	return append([]byte{0x01, 0x04, 0x48}, focusPosition...)
+// CamFocusDirectCommand set direct focus position. focusPosition in 0..0xFFFF
+func CamFocusDirectCommand(focusPosition uint16) Command {
+	p := (0xF000 & focusPosition) >> 12
+	q := (0x0F00 & focusPosition) >> 8
+	r := (0x00F0 & focusPosition) >> 4
+	s := 0x000F & focusPosition
+	return Command{0x01, 0x04, 0x48, byte(p), byte(q), byte(r), byte(s)}
 }
 
 func CamAFSensitivityNormalCommand() Command {

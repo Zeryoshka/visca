@@ -49,13 +49,6 @@ func (c *Controller) Close() error {
 	return nil
 }
 
-func (c *Controller) RemoveAllCameras() {
-	// TODO rewrite
-	for k := range c.cameras {
-		delete(c.cameras, k)
-	}
-}
-
 func (c *Controller) buildHeader(rtype requestType, payloadLen int) []byte {
 	header := make([]byte, HeaderLen)
 	// bytes 0, 1 - request type bytes from spec
