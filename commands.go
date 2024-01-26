@@ -208,3 +208,21 @@ func CamSaturation(level byte) Command {
 	q := 0x0F & level
 	return Command{0x01, 0x04, 0xA1, 0x00, 0x00, p, q}
 }
+
+func CamBright(s Selector) Command {
+	return Command{0x01, 0x04, 0x0D, byte(s)}
+}
+
+func CamBrightDirect(level byte) Command {
+	p := (0xF0 & level) >> 4
+	q := 0x0F & level
+	return Command{0x01, 0x04, 0x4D, 0x00, 0x00, p, q}
+}
+
+// CamWD sets Wide Dynamic Range. level in range 0(off) 1(low)..3(high)
+func CamWD(level byte) Command {
+	if level > 3 {
+		return nil
+	}
+	return Command{0x01, 0x7E, 0x04, 0x00, level}
+}
