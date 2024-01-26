@@ -182,3 +182,47 @@ func CamAFSensitivityNormalCommand() Command {
 func CamAFSensitivityLowCommand() Command {
 	return Command{0x01, 0x04, 0x58, 0x03}
 }
+
+type HueColorSpecification byte
+
+const (
+	HueMaster HueColorSpecification = 0
+	Magenta   HueColorSpecification = 1
+	HueRed    HueColorSpecification = 2
+	HueYellow HueColorSpecification = 3
+	HueGreen  HueColorSpecification = 4
+	HueCyan   HueColorSpecification = 5
+	HueBlue   HueColorSpecification = 6
+)
+
+// CamColorHue set direct hue. level in range 0..0x0E. The initial value of level is 4
+func CamColorHue(color HueColorSpecification, level byte) Command {
+	if level > 0x0E {
+		return nil
+	}
+	return Command{0x01, 0x04, 0x4F, 0x00, 0x00, byte(color), level}
+}
+
+func CamSaturation(level byte) Command {
+	p := (0xF0 & level) >> 4
+	q := 0x0F & level
+	return Command{0x01, 0x04, 0xA1, 0x00, 0x00, p, q}
+}
+
+func CamBright(s Selector) Command {
+	return Command{0x01, 0x04, 0x0D, byte(s)}
+}
+
+func CamBrightDirect(level byte) Command {
+	p := (0xF0 & level) >> 4
+	q := 0x0F & level
+	return Command{0x01, 0x04, 0x4D, 0x00, 0x00, p, q}
+}
+
+// CamWD sets Wide Dynamic Range. level in range 0(off) 1(low)..3(high)
+func CamWD(level byte) Command {
+	if level > 3 {
+		return nil
+	}
+	return Command{0x01, 0x7E, 0x04, 0x00, level}
+}
