@@ -116,7 +116,27 @@ func (c *Connpool) Close() error {
 	c.closeMut.Lock()
 	defer c.closeMut.Unlock()
 
-	close(c.requests)
-	close(c.middleReq)
-	return c.conn.Close()
+	if !isChannelClosed(c.requests) {
+		close(c.requests)
+	}
+
+	if !isChannelClosed(c.middleReq) {
+		close(c.middleReq)
+	}
+
+	var err error
+	if c.conn != nil {
+		err = c.conn.Close()
+	}
+
+	return err
+}
+
+func isChannelClosed(ch chan *request) bool {
+	select {
+	case <-ch:
+		return true
+	default:
+		return false
+	}
 }
